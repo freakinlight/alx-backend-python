@@ -10,11 +10,20 @@ from tasks import task_wait_random  # Import task_wait_random
 
 async def task_wait_n(n: int, max_delay: int) -> List[float]:
     """
-    Spawn task_wait_random n times with max_delay and return a list of delays
-    in ascending order without using sort().
+    Spawn task_wait_random n times with max_delay and return
+    a list of delays in ascending order without using sort().
     """
-    tasks = [
-        task_wait_random(max_delay) for _ in range(n)
-    ]  # Create n tasks
-    delays = await asyncio.gather(*tasks)  # Wait for all tasks to complete
-    return sorted(delays)  # Return the list of delays in ascending order
+    tasks = [task_wait_random(max_delay) for _ in range(n)]
+    delays = []
+    for task in asyncio.as_completed(tasks):
+        delay = await task  # Wait for the next task to finish
+        # Insert delay in the correct position to maintain ascending order
+        inserted = False
+        for i in range(len(delays)):
+            if delay < delays[i]:
+                delays.insert(i, delay)
+                inserted = True
+                break
+        if not inserted:
+            delays.append(delay)
+    return delays

@@ -22,6 +22,10 @@ async def async_comprehension() -> List[float]:
 
 
 async def main():
+    """
+    Main coroutine that invokes async_comprehension and prints its result.
+    This function is the entry point of the program when executed.
+    """
     print(await async_comprehension())
 
 if __name__ == '__main__':
